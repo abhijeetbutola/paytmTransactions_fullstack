@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-main.catch(err => console.log(err))
+dotenv.config();
 
 async function main() {
-    await mongoose.connect(process.env.MONGO_URI/"paytm_8.2")
+    // eslint-disable-next-line no-undef
+    await mongoose.connect(process.env.MONGO_URI + "/paytm_transactions");
 }
+
+main().catch(err => console.log(err));
 
 const { Schema } = mongoose;
 
@@ -13,6 +17,19 @@ const userSchema = new Schema({
     lastName: String,
     username: String,
     password: String,
+});
+
+const accountSchema = new Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    balance: {
+        type: Number,
+        required: true
+    }
 })
 
-export const User = mongoose.Model('User', userSchema)
+export const User = mongoose.model('User', userSchema);
+export const Account = mongoose.model('Account', accountSchema)
