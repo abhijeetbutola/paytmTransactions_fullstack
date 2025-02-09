@@ -17,18 +17,18 @@ const signupSchema = z.object({
 
 userRouter.post("/signup", async (req, res) => {
     const body = req.body
-
+    
     const result = signupSchema.safeParse(body);
     if(!result.success) {
         console.error("Validation failed. Error: ", result.error);   
         return res.status(411).json({ message: "Email already taken or Incorrect inputs" })
     }
-
+    
     const existingUser = await User.findOne({
         username: body.username
     })   
-
-    if(existingUser) {
+    
+    if(existingUser !== null) {
         return res.status(411).json({ message: "Email already taken or incorrect inputs" })
     }
 
@@ -105,18 +105,20 @@ userRouter.put("/", authMiddleware, async (req, res) => {
     })
 })
 
-userRouter.get("/bulk", async (req, res) => {
+userRouter.get("/bulk", authMiddleware, async (req, res) => {
     const filter = req.query.filter || ""
 
     const users = await User.find({
         $or: [{
             firstName: {
-                "$regex": filter
+                "$regex": filter,
+                "$options": "i"
             }
         },
         {
             lastName: {
-                "$regex": filter
+                "$regex": filter,
+                "$options": "i"
             }
         }
     ]

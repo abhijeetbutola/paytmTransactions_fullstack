@@ -4,6 +4,7 @@ const Input = ({
   id,
   label,
   type = "text",
+  name,
   placeholder = "",
   value,
   onChange,
@@ -22,6 +23,7 @@ const Input = ({
       <input
         id={id}
         type={type}
+        name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
