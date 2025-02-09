@@ -1,6 +1,6 @@
 import express from "express";
 import { z } from "zod";
-import { User } from "../config/db.js";
+import { User, Account } from "../config/db.js";
 import { JWT_SECRET } from "../../config.js";
 import jwt from "jsonwebtoken";
 import { authMiddleware } from "../middlewares/index.js";
@@ -10,7 +10,7 @@ export const userRouter = express.Router();
 const signupSchema = z.object({
     firstName: z.string().trim(),
     lastName: z.string().trim(),
-    password: z.string().min(8).trim(),
+    password: z.string().min(5).trim(),
     username: z.string().email().trim(),
 
 })
@@ -21,15 +21,15 @@ userRouter.post("/signup", async (req, res) => {
     const result = signupSchema.safeParse(body);
     if(!result.success) {
         console.error("Validation failed. Error: ", result.error);   
-        return res.status(411).json({ message: "Email already taken, Incorrect inputs" })
+        return res.status(411).json({ message: "Email already taken or Incorrect inputs" })
     }
 
-    const existingUser = User.findOne({
+    const existingUser = await User.findOne({
         username: body.username
-    })
+    })   
 
     if(existingUser) {
-        return res.status(411).json({ message: "Email already taken, incorrect inputs" })
+        return res.status(411).json({ message: "Email already taken or incorrect inputs" })
     }
 
     // since user does not exist. create one.
@@ -41,6 +41,11 @@ userRouter.post("/signup", async (req, res) => {
     })
 
     const userId = user._id
+
+    await Account.create({
+        userId: userId,
+        balance: (1 + Math.random() * 1000).toFixed(2)
+    })
 
     const token = jwt.sign({
         userId,
@@ -56,7 +61,9 @@ userRouter.post("/signup", async (req, res) => {
 userRouter.post("/signin", async (req, res) => {
     const body = req.body;
 
-    const user = await User.getUser(body.username)
+    const user = await User.findOne({
+        username: body.username
+    })
 
     if(!user) {
         res.status(411).json({ message: "Invalid username"})

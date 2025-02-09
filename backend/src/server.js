@@ -14,7 +14,7 @@ app.use("/api/v1/", mainRouter);
 
 // sample api route
 app.get("/", (req, res) => {
-    res.json({ message: "Welcome to Express API!" })
+    res.json({ message: "Welcome!" })
 })
 
 // start server
