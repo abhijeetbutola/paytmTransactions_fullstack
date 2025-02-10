@@ -8,7 +8,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 function Dashboard() {
-    const [userData, setUserData] = useState([]);
+    const [usersData, setUsersData] = useState([]);
+    const [userBalance, setUserBalance] = useState(0);
     const [inputTerm, setInputTerm] = useState("");
     const [token, setToken] = useState("");
 
@@ -32,7 +33,7 @@ function Dashboard() {
                         params: { filter: inputTerm },
                     });
 
-                    setUserData(response.data.user);
+                    setUsersData(response.data.user);
                 } catch (error) {
                     console.error("Error fetching users:", error);
                 }
@@ -40,14 +41,37 @@ function Dashboard() {
 
             fetchData();
         }
-    }, [inputTerm, token]);    
+    }, [inputTerm, token]);
+
+    console.log(usersData);
+    
+
+    useEffect(() => {
+        if (token) {
+            const fetchData = async () => {
+                try {
+                    const response = await axios.get("http://localhost:5000/api/v1/account/balance", {
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`,
+                        },
+                    });
+
+                    setUserBalance(response.data.balance);
+                } catch (error) {
+                    console.error("Error fetching data: ", error);
+                }
+            }
+            fetchData()
+        }
+    }, [token])
 
     return (
         <div className="flex flex-col gap-4">
             <Navbar />
             <div className="flex flex-col gap-3 px-8">
                 <div>
-                    <Text as="p" className="font-bold">Your balance is: 10,000</Text>
+                    <Text as="p" className="font-bold">Your balance is: Rs {userBalance}</Text>
                 </div>
                 <div className="flex flex-col gap-2">
                     <div>
@@ -60,7 +84,7 @@ function Dashboard() {
                         />
                     </div>
                     <div>
-                        {userData.length > 0 ? <UserList users={userData} /> : <Text>No users found</Text>}
+                        {usersData.length > 0 ? <UserList users={usersData} /> : <Text>No users found</Text>}
                     </div>
                 </div>
             </div>

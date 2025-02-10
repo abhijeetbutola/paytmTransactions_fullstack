@@ -123,9 +123,14 @@ userRouter.get("/bulk", authMiddleware, async (req, res) => {
         }
     ]
     })
+    
 
     res.json({
-        user: users.map((user) => ({
+        user: users
+        .filter((user) => {
+            return user._id.toString() !== req.userId
+        })
+        .map((user) => ({
             username: user.username,
             firstName: user.firstName,
             lastName: user.lastName,

@@ -38,9 +38,7 @@ function Signup() {
                     }
                 }
             );
-    
-            console.log("Signup successful:", response.data);
-            console.log("token: ", response.data.token)
+            
             localStorage.setItem("token", response.data.token)
         } catch (error) {
             console.error("Signup error:", error.response?.data || error.message);

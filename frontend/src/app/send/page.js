@@ -57,7 +57,7 @@ function SendMoney() {
                     </div>
                     <div className="flex flex-col gap-2 justify-start w-full">
                         <div className="flex items-center gap-3">
-                            <UserIcon letter={"Friend's"[0]}/>
+                            <UserIcon letter={name[0]}/>
                             <Text as="p" className="text-lg font-bold">{name}</Text>
                         </div>
                         <div>
